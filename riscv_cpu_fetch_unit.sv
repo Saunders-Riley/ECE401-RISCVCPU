@@ -65,7 +65,7 @@ module riscv_cpu_fetch_unit#(
 
     // AHB address logic
     always @(posedge cpu_clk, negedge cpu_resetn) begin
-        if(~cpu_resetn) begin
+        if(cpu_resetn) begin
             m_ahb_haddr     <= pcaddr[0];
             m_ahb_htrans    <= AHB_HTRANS_NONSEQ;
         end else begin
@@ -76,7 +76,7 @@ module riscv_cpu_fetch_unit#(
 
     // Pipeline Output logic
     always @(posedge cpu_clk, negedge cpu_resetn) begin
-        if(~cpu_resetn) begin
+        if(cpu_resetn) begin
             pipe_instr      <= (fetch_stall_in)? pipe_instr : ((m_ahb_hreadyin & ~m_ahb_hresp)? m_ahb_hrdata : RISCV_INSTR_NOP);
             pipe_pcaddr     <= pcaddr[1];
         end else begin
@@ -87,7 +87,7 @@ module riscv_cpu_fetch_unit#(
 
     // Program Counter logic
     always @(posedge cpu_clk, negedge cpu_resetn) begin
-        if(~cpu_resetn) begin
+        if(cpu_resetn) begin
             if(~fetch_stall_in) begin
                 if(fetch_branch) begin
                     pcaddr[1]       <= pcaddr[0];

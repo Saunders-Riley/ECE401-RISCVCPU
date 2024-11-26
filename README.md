@@ -13,3 +13,8 @@ Files:
     riscv_cpu_exec_unit.sv - execution unit with external AHB D-cache interface, ALU, register file.
     riscv_cpu_commit_unit.sv - writeback unit to collect data and correct branch mispredictions.
 
+Resources:
+    https://www.cs.sfu.ca/~ashriram/Courses/CS295/assets/notebooks/RISCV/RISCV_CARD.pdf - RISC-V ISA reference card
+    https://riscv.org/wp-content/uploads/2019/12/riscv-spec-20191213.pdf - Complete RISC-V specification
+    https://riscv.org/wp-content/uploads/2017/05/riscv-privileged-v1.10.pdf - RISC-V privileged ISA specification
+
