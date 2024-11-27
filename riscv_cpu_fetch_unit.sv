@@ -1,7 +1,7 @@
+`include "riscv_instruction_set.vh"
+
 `define AHB_HTRANS_IDLE     2'b00
 `define AHB_HTRANS_NONSEQ   2'b10
-
-`define RISCV_INSTR_NOP     32'b0000_0000_0000_0000__0000_0000_0011_0011
 
 //riscv_cpu_fetch_unit#(
 //    RESET_VECTOR    = 32'h00000000
@@ -80,7 +80,7 @@ module riscv_cpu_fetch_unit#(
             pipe_instr      <= (fetch_stall_in)? pipe_instr : ((m_ahb_hreadyin & ~m_ahb_hresp)? m_ahb_hrdata : RISCV_INSTR_NOP);
             pipe_pcaddr     <= pcaddr[1];
         end else begin
-            pipe_instr      <= RISCV_INSTR_NOP;
+            pipe_instr      <= RISCV_RV32I_INSTR_NOP;
             pipe_pcaddr     <= RESET_VECTOR;
         end
     end
@@ -89,12 +89,16 @@ module riscv_cpu_fetch_unit#(
     always @(posedge cpu_clk, negedge cpu_resetn) begin
         if(cpu_resetn) begin
             if(~fetch_stall_in) begin
+                // For branch or indirect jump, take the ALU output
                 if(fetch_branch) begin
                     pcaddr[1]       <= pcaddr[0];
                     pcaddr[0]       <= fetch_branch_pcaddr;
-                end else if(m_ahb_hrdata[6:0] == 7'b0110111) begin
+                // For PC-relative jump, apply the jump offset immediately
+                end else if(m_ahb_hrdata[6:0] == RISCV_RV32I_OPCODE_JAL) begin
                     pcaddr[1]       <= pcaddr[0];
                     pcaddr[0]       <= pcaddr + jump_offset;
+//TODO - implement branch prediction here
+                // Otherwise, continue as normal
                 end else begin
                     pcaddr[1]       <= pcaddr[0];
                     pcaddr[0]       <= pcaddr + 4;
