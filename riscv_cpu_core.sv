@@ -83,24 +83,24 @@ module riscv_cpu_exec_unit#(
     logic[31:0]     prog_counter_pl;
     logic[31:0]     branch_jump_addr;
     logic           branch_jump;
-    logic           pipe_stall;
+    wire            pipe_stall = ~(imem_m_ahb_hreadyin & dmem_m_ahb_hreadyin);
     logic           pipe_flush;
-    logic[31:0]     jump_offset = {imem_m_ahb_hrdata[31], imem_m_ahb_hrdata[19:12], imem_m_ahb_hrdata[20], imem_m_ahb_hrdata[30:21], 1'b0};
+    wire[31:0]      jump_offset = {imem_m_ahb_hrdata[31], imem_m_ahb_hrdata[19:12], imem_m_ahb_hrdata[20], imem_m_ahb_hrdata[30:21], 1'b0};
 
     // Pipeline Stage 2 - Instruction Decode
     logic[31:0]     pl_fetch_instr;
     logic[31:0]     pl_fetch_pcaddr;
-    logic[6:0]      pl_fetch_funct7     = pl_fetch_instr[31:25];
-    logic[4:0]      pl_fetch_rs2        = pl_fetch_instr[24:20];
-    logic[4:0]      pl_fetch_rs1        = pl_fetch_instr[19:15];
-    logic[2:0]      pl_fetch_funct3     = pl_fetch_instr[14:12];
-    logic[4:0]      pl_fetch_rd         = pl_fetch_instr[11:7];
-    logic[6:0]      pl_fetch_opcode     = pl_fetch_instr[6:0];
-    logic[11:0]     pl_fetch_imm_I      = pl_fetch_instr[11:0];
-    logic[11:0]     pl_fetch_imm_S      = {pl_fetch_funct7, pl_fetch_rd};
-    logic[12:0]     pl_fetch_imm_B      = {pl_fetch_funct7[6], pl_fetch_rd[0], pl_fetch_funct7[5:0], pl_fetch_rd[4:1], 1'b0};
-    logic[19:0]     pl_fetch_imm_U      = pl_fetch_instr[31:12];
-    logic[20:0]     pl_fetch_imm_J      = {pl_fetch_imm_U[19], pl_fetch_imm_U[7:0], pl_fetch_imm_U[8], pl_fetch_imm_U[18:9], 1'b0};
+    wire[6:0]       pl_fetch_funct7     = pl_fetch_instr[31:25];
+    wire[4:0]       pl_fetch_rs2        = pl_fetch_instr[24:20];
+    wire[4:0]       pl_fetch_rs1        = pl_fetch_instr[19:15];
+    wire[2:0]       pl_fetch_funct3     = pl_fetch_instr[14:12];
+    wire[4:0]       pl_fetch_rd         = pl_fetch_instr[11:7];
+    wire[6:0]       pl_fetch_opcode     = pl_fetch_instr[6:0];
+    wire[11:0]      pl_fetch_imm_I      = pl_fetch_instr[11:0];
+    wire[11:0]      pl_fetch_imm_S      = {pl_fetch_funct7, pl_fetch_rd};
+    wire[12:0]      pl_fetch_imm_B      = {pl_fetch_funct7[6], pl_fetch_rd[0], pl_fetch_funct7[5:0], pl_fetch_rd[4:1], 1'b0};
+    wire[19:0]      pl_fetch_imm_U      = pl_fetch_instr[31:12];
+    wire[20:0]      pl_fetch_imm_J      = {pl_fetch_imm_U[19], pl_fetch_imm_U[7:0], pl_fetch_imm_U[8], pl_fetch_imm_U[18:9], 1'b0};
 
     // Pipeline Stage 3 - Instruction Execute
     logic[31:0]     pl_exec_instr;
@@ -108,51 +108,51 @@ module riscv_cpu_exec_unit#(
     logic[31:0]     pl_exec_op1;
     logic[31:0]     pl_exec_op2;
     logic[31:0]     pl_exec_op3;
-    logic[6:0]      pl_exec_funct7      = pl_exec_instr[31:25];
-    logic[4:0]      pl_exec_rs2         = pl_exec_instr[24:20];
-    logic[4:0]      pl_exec_rs1         = pl_exec_instr[19:15];
-    logic[2:0]      pl_exec_funct3      = pl_exec_instr[14:12];
-    logic[4:0]      pl_exec_rd          = pl_exec_instr[11:7];
-    logic[6:0]      pl_exec_opcode      = pl_exec_instr[6:0];
-    logic[11:0]     pl_exec_imm_I       = pl_exec_instr[11:0];
-    logic[11:0]     pl_exec_imm_S       = {pl_exec_funct7, pl_exec_rd};
-    logic[12:0]     pl_exec_imm_B       = {pl_exec_funct7[6], pl_exec_rd[0], pl_exec_funct7[5:0], pl_exec_rd[4:1], 1'b0};
-    logic[19:0]     pl_exec_imm_U       = pl_exec_instr[31:12];
-    logic[20:0]     pl_exec_imm_J       = {pl_exec_imm_U[19], pl_exec_imm_U[7:0], pl_exec_imm_U[8], pl_exec_imm_U[18:9], 1'b0};
+    wire[6:0]       pl_exec_funct7      = pl_exec_instr[31:25];
+    wire[4:0]       pl_exec_rs2         = pl_exec_instr[24:20];
+    wire[4:0]       pl_exec_rs1         = pl_exec_instr[19:15];
+    wire[2:0]       pl_exec_funct3      = pl_exec_instr[14:12];
+    wire[4:0]       pl_exec_rd          = pl_exec_instr[11:7];
+    wire[6:0]       pl_exec_opcode      = pl_exec_instr[6:0];
+    wire[11:0]      pl_exec_imm_I       = pl_exec_instr[11:0];
+    wire[11:0]      pl_exec_imm_S       = {pl_exec_funct7, pl_exec_rd};
+    wire[12:0]      pl_exec_imm_B       = {pl_exec_funct7[6], pl_exec_rd[0], pl_exec_funct7[5:0], pl_exec_rd[4:1], 1'b0};
+    wire[19:0]      pl_exec_imm_U       = pl_exec_instr[31:12];
+    wire[20:0]      pl_exec_imm_J       = {pl_exec_imm_U[19], pl_exec_imm_U[7:0], pl_exec_imm_U[8], pl_exec_imm_U[18:9], 1'b0};
 
     // Pipeline Stage 4 - Memory Access
     logic[31:0]     pl_mem_instr;
     logic[31:0]     pl_mem_pcaddr;
     logic[31:0]     pl_mem_res;
     logic[31:0]     pl_mem_byp;
-    logic[6:0]      pl_mem_funct7        = pl_mem_instr[31:25];
-    logic[4:0]      pl_mem_rs2           = pl_mem_instr[24:20];
-    logic[4:0]      pl_mem_rs1           = pl_mem_instr[19:15];
-    logic[2:0]      pl_mem_funct3        = pl_mem_instr[14:12];
-    logic[4:0]      pl_mem_rd            = pl_mem_instr[11:7];
-    logic[6:0]      pl_mem_opcode        = pl_mem_instr[6:0];
-    logic[11:0]     pl_mem_imm_I         = pl_mem_instr[11:0];
-    logic[11:0]     pl_mem_imm_S         = {pl_mem_funct7, pl_mem_rd};
-    logic[12:0]     pl_mem_imm_B         = {pl_mem_funct7[6], pl_mem_rd[0], pl_mem_funct7[5:0], pl_mem_rd[4:1], 1'b0};
-    logic[19:0]     pl_mem_imm_U         = pl_mem_instr[31:12];
-    logic[20:0]     pl_mem_imm_J         = {pl_mem_imm_U[19], pl_mem_imm_U[7:0], pl_mem_imm_U[8], pl_mem_imm_U[18:9], 1'b0};
+    wire[6:0]       pl_mem_funct7        = pl_mem_instr[31:25];
+    wire[4:0]       pl_mem_rs2           = pl_mem_instr[24:20];
+    wire[4:0]       pl_mem_rs1           = pl_mem_instr[19:15];
+    wire[2:0]       pl_mem_funct3        = pl_mem_instr[14:12];
+    wire[4:0]       pl_mem_rd            = pl_mem_instr[11:7];
+    wire[6:0]       pl_mem_opcode        = pl_mem_instr[6:0];
+    wire[11:0]      pl_mem_imm_I         = pl_mem_instr[11:0];
+    wire[11:0]      pl_mem_imm_S         = {pl_mem_funct7, pl_mem_rd};
+    wire[12:0]      pl_mem_imm_B         = {pl_mem_funct7[6], pl_mem_rd[0], pl_mem_funct7[5:0], pl_mem_rd[4:1], 1'b0};
+    wire[19:0]      pl_mem_imm_U         = pl_mem_instr[31:12];
+    wire[20:0]      pl_mem_imm_J         = {pl_mem_imm_U[19], pl_mem_imm_U[7:0], pl_mem_imm_U[8], pl_mem_imm_U[18:9], 1'b0};
 
     // Pipeline Stage 5 - Instruction Writeback
     logic[31:0]     pl_wb_instr;
     logic[31:0]     pl_wb_pcaddr;
     logic[31:0]     pl_wb_res;
     logic[31:0]     pl_wb_byp;
-    logic[6:0]      pl_wb_funct7        = pl_wb_instr[31:25];
-    logic[4:0]      pl_wb_rs2           = pl_wb_instr[24:20];
-    logic[4:0]      pl_wb_rs1           = pl_wb_instr[19:15];
-    logic[2:0]      pl_wb_funct3        = pl_wb_instr[14:12];
-    logic[4:0]      pl_wb_rd            = pl_wb_instr[11:7];
-    logic[6:0]      pl_wb_opcode        = pl_wb_instr[6:0];
-    logic[11:0]     pl_wb_imm_I         = pl_wb_instr[11:0];
-    logic[11:0]     pl_wb_imm_S         = {pl_wb_funct7, pl_wb_rd};
-    logic[12:0]     pl_wb_imm_B         = {pl_wb_funct7[6], pl_wb_rd[0], pl_wb_funct7[5:0], pl_wb_rd[4:1], 1'b0};
-    logic[19:0]     pl_wb_imm_U         = pl_wb_instr[31:12];
-    logic[20:0]     pl_wb_imm_J         = {pl_wb_imm_U[19], pl_wb_imm_U[7:0], pl_wb_imm_U[8], pl_wb_imm_U[18:9], 1'b0};
+    wire[6:0]       pl_wb_funct7        = pl_wb_instr[31:25];
+    wire[4:0]       pl_wb_rs2           = pl_wb_instr[24:20];
+    wire[4:0]       pl_wb_rs1           = pl_wb_instr[19:15];
+    wire[2:0]       pl_wb_funct3        = pl_wb_instr[14:12];
+    wire[4:0]       pl_wb_rd            = pl_wb_instr[11:7];
+    wire[6:0]       pl_wb_opcode        = pl_wb_instr[6:0];
+    wire[11:0]      pl_wb_imm_I         = pl_wb_instr[11:0];
+    wire[11:0]      pl_wb_imm_S         = {pl_wb_funct7, pl_wb_rd};
+    wire[12:0]      pl_wb_imm_B         = {pl_wb_funct7[6], pl_wb_rd[0], pl_wb_funct7[5:0], pl_wb_rd[4:1], 1'b0};
+    wire[19:0]      pl_wb_imm_U         = pl_wb_instr[31:12];
+    wire[20:0]      pl_wb_imm_J         = {pl_wb_imm_U[19], pl_wb_imm_U[7:0], pl_wb_imm_U[8], pl_wb_imm_U[18:9], 1'b0};
 
     // Pipeline Stage 1 - Instruction Fetch
     always @(posedge cpu_clk, negedge cpu_resetn) begin
@@ -189,10 +189,10 @@ module riscv_cpu_exec_unit#(
     end
 
     // Pipeline Stage 2 - Instruction Decode
-    logic[11:0]     regs_rs1_sel        = {7'h00, pl_fetch_rs1};
-    logic[31:0]     regs_rs1_data;
-    logic[11:0]     regs_rs2_sel        = (pl_fetch_opcode == `RISCV_RV32I_OPCODE_SYSTEM) ? pl_fetch_imm_I : pl_fetch_rs2;
-    logic[31:0]     regs_rs2_data;
+    wire[11:0]     regs_rs1_sel        = {7'h00, pl_fetch_rs1};
+    wire[31:0]     regs_rs1_data;
+    wire[11:0]     regs_rs2_sel        = (pl_fetch_opcode == `RISCV_RV32I_OPCODE_SYSTEM) ? pl_fetch_imm_I : pl_fetch_rs2;
+    wire[31:0]     regs_rs2_data;
     always @(posedge cpu_clk, negedge cpu_resetn) begin
         if(cpu_resetn) begin
             pl_fetch_instr  <= (pipe_flush) ? `RISCV_RV32I_INSTR_NOP :
@@ -208,13 +208,13 @@ module riscv_cpu_exec_unit#(
 
     
     // Pipeline Stage 3 - Instruction Execute
-    logic[31:0]     pl_exec_op1_fwd     = (pl_exec_rs1 == pl_mem_rd) ? pl_mem_res :
+    wire[31:0]     pl_exec_op1_fwd     = (pl_exec_rs1 == pl_mem_rd) ? pl_mem_res :
                                             (pl_exec_rs1 == pl_wb_rd) ? pl_wb_res : pl_exec_op1;
-    logic[31:0]     pl_exec_op2_fwd     = (pl_exec_rs1 == pl_mem_rd) ? pl_mem_res :
+    wire[31:0]     pl_exec_op2_fwd     = (pl_exec_rs1 == pl_mem_rd) ? pl_mem_res :
                                             (pl_exec_rs1 == pl_wb_rd) ? pl_wb_res : pl_exec_op2;
-    logic[31:0]     pl_exec_op3_fwd     = pl_exec_op3;
-    logic[31:0]     alu_res;
-    logic[31:0]     alu_byp;
+    wire[31:0]     pl_exec_op3_fwd     = pl_exec_op3;
+    wire[31:0]     alu_res;
+    wire[31:0]     alu_byp;
     always @(posedge cpu_clk, negedge cpu_resetn) begin
         if(cpu_resetn) begin
             pl_exec_instr   <= (pipe_flush) ? `RISCV_RV32I_INSTR_NOP :
@@ -410,10 +410,10 @@ module riscv_cpu_exec_unit#(
     end
 
     // Pipeline Stage 5 - Instruction Writeback
-    logic[11:0]     regs_rd1_sel        = (pl_wb_opcode == `RISCV_RV32I_OPCODE_SYSTEM) ? pl_wb_imm_I : {7'h0, pl_wb_rd};
+    wire[11:0]      regs_rd1_sel        = (pl_wb_opcode == `RISCV_RV32I_OPCODE_SYSTEM) ? pl_wb_imm_I : {7'h0, pl_wb_rd};
     logic[31:0]     regs_rd1_data;
     logic           regs_rd1_wren;
-    logic[4:0]      regs_rd2_sel        = (pl_wb_opcode == `RISCV_RV32I_OPCODE_SYSTEM) ? pl_wb_rd : 5'h00;
+    wire[4:0]       regs_rd2_sel        = (pl_wb_opcode == `RISCV_RV32I_OPCODE_SYSTEM) ? pl_wb_rd : 5'h00;
     logic[31:0]     regs_rd2_data;
     logic           regs_rd2_wren;
     always @(posedge cpu_clk, negedge cpu_resetn) begin
@@ -512,8 +512,19 @@ module riscv_cpu_exec_unit#(
                 end
             endcase
         end else begin
-            pl_wb_instr     <= `RISCV_RV32I_INSTR_NOP;
-            pl_fetch_pcaddr <= 32'h0000_0000;
+            pl_wb_instr         <= `RISCV_RV32I_INSTR_NOP;
+            pl_fetch_pcaddr     <= 32'h0000_0000;
+            pl_wb_res           <= 32'h0000_0000;
+            pl_wb_byp           <= 32'h0000_0000;
+            dmem_m_ahb_hwdata   <= 32'h0000_0000;
+            dmem_m_ahb_hwstrb   <= 4'h0;
+            regs_rd1_data       <= 32'h0000_0000;
+            regs_rd1_wren       <= 0;
+            regs_rd2_data       <= 32'h0000_0000;
+            regs_rd2_wren       <= 0;
+            pipe_flush          <= 0;
+            branch_jump         <= 0;
+            branch_jump_addr    <= 32'h0000_0000;
         end
     end
 
@@ -795,8 +806,118 @@ module __tb_riscv_cpu_exec_unit(
     logic           dmem_m_ahb_hresp;
 
     initial begin
+        #0
+        cpu_clk = 1;
+        cpu_resetn = 1;
+        #1
+        cpu_clk = 0;
+        cpu_resetn = 0;
+        #1
+        cpu_clk = 1;
+        cpu_resetn = 0;
+        #1
+        cpu_clk = 0;
+        cpu_resetn = 0;
+        #1
+        cpu_clk = 1;
+        cpu_resetn = 0;
+        #1
+        cpu_clk = 0;
+        cpu_resetn = 0;
+        #1
+        cpu_clk = 1;
+        cpu_resetn = 0;
+        #1
+        cpu_clk = 0;
+        cpu_resetn = 0;
+        #1
+        cpu_clk = 1;
+        cpu_resetn = 0;
+        #1
+        cpu_clk = 0;
+        cpu_resetn = 0;
+        #1
+        cpu_clk = 1;
+        cpu_resetn = 0;
+        #1
+        cpu_clk = 0;
+        cpu_resetn = 1;
+        #1
+        cpu_clk = 1;
+        cpu_resetn = 1;
         forever begin
-            #1 cpu_clk = ~cpu_clk;
+            #1
+            cpu_clk = ~cpu_clk;
+            $display("GLOBALS:");
+            $display("cpu_resetn = %d, pipe_stall = %d, pipe_flush = %d",
+                cpu_resetn,
+                DUT_inst_riscv_cpu_exec_unit.pipe_stall,
+                DUT_inst_riscv_cpu_exec_unit.pipe_flush
+            );
+            $display("FETCH STAGE:");
+            $display("prog_counter = %h, prog_counter_pl = %h, branch_jump = %d, branch_jump_addr = %h",
+                DUT_inst_riscv_cpu_exec_unit.prog_counter,
+                DUT_inst_riscv_cpu_exec_unit.prog_counter_pl,
+                DUT_inst_riscv_cpu_exec_unit.branch_jump,
+                DUT_inst_riscv_cpu_exec_unit.branch_jump_addr
+            );
+            $display("imem_m_ahb_haddr = %h, imem_m_ahb_hrdata = %h, imem_m_ahb_hreadyin = %d",
+                imem_m_ahb_haddr,
+                imem_m_ahb_hrdata,
+                imem_m_ahb_hreadyin
+            );
+            $display("DECODE STAGE:");
+            $display("pl_fetch_instr = %h, pl_fetch_pcaddr = %h",
+                DUT_inst_riscv_cpu_exec_unit.pl_fetch_instr,
+                DUT_inst_riscv_cpu_exec_unit.pl_fetch_pcaddr
+            );
+            $display("regs_rs1_sel = %h, regs_rs1_data = %h, regs_rs2_sel = %h, regs_rs2_data = %h",
+                DUT_inst_riscv_cpu_exec_unit.regs_rs1_sel,
+                DUT_inst_riscv_cpu_exec_unit.regs_rs1_data,
+                DUT_inst_riscv_cpu_exec_unit.regs_rs2_sel,
+                DUT_inst_riscv_cpu_exec_unit.regs_rs2_data
+            );
+            $display("EXECUTE STAGE:");
+            $display("pl_exec_instr = %h, pl_exec_pcaddr = %h",
+                DUT_inst_riscv_cpu_exec_unit.pl_exec_instr,
+                DUT_inst_riscv_cpu_exec_unit.pl_exec_pcaddr
+            );
+            $display("pl_exec_op1_fwd = %h, pl_exec_op2_fwd = %h, pl_exec_op3_fwd = %h, alu_res = %h, alu_byp = %h",
+                DUT_inst_riscv_cpu_exec_unit.pl_exec_op1_fwd,
+                DUT_inst_riscv_cpu_exec_unit.pl_exec_op2_fwd,
+                DUT_inst_riscv_cpu_exec_unit.pl_exec_op3_fwd,
+                DUT_inst_riscv_cpu_exec_unit.alu_res,
+                DUT_inst_riscv_cpu_exec_unit.alu_byp
+            );
+            $display("MEMORY STAGE:");
+            $display("pl_mem_instr = %h, pl_mem_pcaddr = %h",
+                DUT_inst_riscv_cpu_exec_unit.pl_mem_instr,
+                DUT_inst_riscv_cpu_exec_unit.pl_mem_pcaddr
+            );
+            $display("pl_mem_res = %h, pl_mem_byp = %h",
+                DUT_inst_riscv_cpu_exec_unit.pl_mem_res,
+                DUT_inst_riscv_cpu_exec_unit.pl_mem_byp
+            );
+            $display("dmem_m_ahb_haddr = %h, dmem_m_ahb_hrdata = %h, dmem_m_ahb_hwdata = %h, dmem_m_ahb_hwrite = %d, dmem_m_ahb_hreadyin = %d",
+                dmem_m_ahb_haddr,
+                dmem_m_ahb_hrdata,
+                dmem_m_ahb_hwdata,
+                dmem_m_ahb_hwrite,
+                dmem_m_ahb_hreadyin
+            );
+            $display("WRITEBACK STAGE:");
+            $display("pl_wb_instr = %h, pl_wb_pcaddr = %h",
+                DUT_inst_riscv_cpu_exec_unit.pl_wb_instr,
+                DUT_inst_riscv_cpu_exec_unit.pl_wb_pcaddr
+            );
+            $display("regs_rd1_sel = %h, regs_rd1_data = %h, regs_rd1_wren = %d, regs_rd2_sel = %h, regs_rd2_data = %h, regs_rd2_wren = %d",
+                DUT_inst_riscv_cpu_exec_unit.regs_rd1_sel,
+                DUT_inst_riscv_cpu_exec_unit.regs_rd1_data,
+                DUT_inst_riscv_cpu_exec_unit.regs_rd1_wren,
+                DUT_inst_riscv_cpu_exec_unit.regs_rd2_sel,
+                DUT_inst_riscv_cpu_exec_unit.regs_rd2_data,
+                DUT_inst_riscv_cpu_exec_unit.regs_rd2_wren
+            );
         end
     end
 
@@ -806,8 +927,8 @@ module __tb_riscv_cpu_exec_unit(
         // Core Signals
         .cpu_clk(cpu_clk),
         .cpu_resetn(cpu_resetn),
-        // `AHB Instruction Interface
-        // `AHB HCLK and HRESETN should be connected to CPU_CLK and CPU_RESETN,
+        // AHB Instruction Interface
+        // AHB HCLK and HRESETN should be connected to CPU_CLK and CPU_RESETN,
         // respectively
         .imem_m_ahb_haddr(imem_m_ahb_haddr),
         .imem_m_ahb_hsize(imem_m_ahb_hsize),
