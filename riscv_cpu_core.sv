@@ -80,12 +80,12 @@ module riscv_cpu_exec_unit#(
 
     // Pipeline Stage 1 - Instruction Fetch
     logic[31:0]     prog_counter;
-    logic[31:0]     prog_counter_pl;
+    logic[31:0]     prog_counter_pl[1:0];
     logic[31:0]     branch_jump_addr;
     logic           branch_jump;
     wire            pipe_stall = ~(imem_m_ahb_hreadyin & dmem_m_ahb_hreadyin);
     logic           pipe_flush;
-    wire[31:0]      jump_offset = {imem_m_ahb_hrdata[31], imem_m_ahb_hrdata[19:12], imem_m_ahb_hrdata[20], imem_m_ahb_hrdata[30:21], 1'b0};
+    wire[20:0]      jump_offset = {imem_m_ahb_hrdata[31], imem_m_ahb_hrdata[19:12], imem_m_ahb_hrdata[20], imem_m_ahb_hrdata[30:21], 1'b0};
 
     // Pipeline Stage 2 - Instruction Decode
     logic[31:0]     pl_fetch_instr;
@@ -96,11 +96,11 @@ module riscv_cpu_exec_unit#(
     wire[2:0]       pl_fetch_funct3     = pl_fetch_instr[14:12];
     wire[4:0]       pl_fetch_rd         = pl_fetch_instr[11:7];
     wire[6:0]       pl_fetch_opcode     = pl_fetch_instr[6:0];
-    wire[11:0]      pl_fetch_imm_I      = pl_fetch_instr[11:0];
+    wire[11:0]      pl_fetch_imm_I      = pl_fetch_instr[31:20];
     wire[11:0]      pl_fetch_imm_S      = {pl_fetch_funct7, pl_fetch_rd};
     wire[12:0]      pl_fetch_imm_B      = {pl_fetch_funct7[6], pl_fetch_rd[0], pl_fetch_funct7[5:0], pl_fetch_rd[4:1], 1'b0};
     wire[19:0]      pl_fetch_imm_U      = pl_fetch_instr[31:12];
-    wire[20:0]      pl_fetch_imm_J      = {pl_fetch_imm_U[19], pl_fetch_imm_U[7:0], pl_fetch_imm_U[8], pl_fetch_imm_U[18:9], 1'b0};
+    wire[31:0]      pl_fetch_imm_J      = {pl_fetch_imm_U[19] ? 11'h7FF : 11'h000, pl_fetch_imm_U[19], pl_fetch_imm_U[7:0], pl_fetch_imm_U[8], pl_fetch_imm_U[18:9], 1'b0};
 
     // Pipeline Stage 3 - Instruction Execute
     logic[31:0]     pl_exec_instr;
@@ -114,11 +114,11 @@ module riscv_cpu_exec_unit#(
     wire[2:0]       pl_exec_funct3      = pl_exec_instr[14:12];
     wire[4:0]       pl_exec_rd          = pl_exec_instr[11:7];
     wire[6:0]       pl_exec_opcode      = pl_exec_instr[6:0];
-    wire[11:0]      pl_exec_imm_I       = pl_exec_instr[11:0];
+    wire[11:0]      pl_exec_imm_I       = pl_exec_instr[31:20];
     wire[11:0]      pl_exec_imm_S       = {pl_exec_funct7, pl_exec_rd};
     wire[12:0]      pl_exec_imm_B       = {pl_exec_funct7[6], pl_exec_rd[0], pl_exec_funct7[5:0], pl_exec_rd[4:1], 1'b0};
     wire[19:0]      pl_exec_imm_U       = pl_exec_instr[31:12];
-    wire[20:0]      pl_exec_imm_J       = {pl_exec_imm_U[19], pl_exec_imm_U[7:0], pl_exec_imm_U[8], pl_exec_imm_U[18:9], 1'b0};
+    wire[31:0]      pl_exec_imm_J       = {pl_exec_imm_U[19] ? 11'h7FF : 11'h000,pl_exec_imm_U[19], pl_exec_imm_U[7:0], pl_exec_imm_U[8], pl_exec_imm_U[18:9], 1'b0};
 
     // Pipeline Stage 4 - Memory Access
     logic[31:0]     pl_mem_instr;
@@ -131,11 +131,11 @@ module riscv_cpu_exec_unit#(
     wire[2:0]       pl_mem_funct3        = pl_mem_instr[14:12];
     wire[4:0]       pl_mem_rd            = pl_mem_instr[11:7];
     wire[6:0]       pl_mem_opcode        = pl_mem_instr[6:0];
-    wire[11:0]      pl_mem_imm_I         = pl_mem_instr[11:0];
+    wire[11:0]      pl_mem_imm_I         = pl_mem_instr[31:20];
     wire[11:0]      pl_mem_imm_S         = {pl_mem_funct7, pl_mem_rd};
     wire[12:0]      pl_mem_imm_B         = {pl_mem_funct7[6], pl_mem_rd[0], pl_mem_funct7[5:0], pl_mem_rd[4:1], 1'b0};
     wire[19:0]      pl_mem_imm_U         = pl_mem_instr[31:12];
-    wire[20:0]      pl_mem_imm_J         = {pl_mem_imm_U[19], pl_mem_imm_U[7:0], pl_mem_imm_U[8], pl_mem_imm_U[18:9], 1'b0};
+    wire[31:0]      pl_mem_imm_J         = {pl_mem_imm_U[19] ? 11'h7FF : 11'h000, pl_mem_imm_U[19], pl_mem_imm_U[7:0], pl_mem_imm_U[8], pl_mem_imm_U[18:9], 1'b0};
 
     // Pipeline Stage 5 - Instruction Writeback
     logic[31:0]     pl_wb_instr;
@@ -148,11 +148,11 @@ module riscv_cpu_exec_unit#(
     wire[2:0]       pl_wb_funct3        = pl_wb_instr[14:12];
     wire[4:0]       pl_wb_rd            = pl_wb_instr[11:7];
     wire[6:0]       pl_wb_opcode        = pl_wb_instr[6:0];
-    wire[11:0]      pl_wb_imm_I         = pl_wb_instr[11:0];
+    wire[11:0]      pl_wb_imm_I         = pl_wb_instr[31:20];
     wire[11:0]      pl_wb_imm_S         = {pl_wb_funct7, pl_wb_rd};
     wire[12:0]      pl_wb_imm_B         = {pl_wb_funct7[6], pl_wb_rd[0], pl_wb_funct7[5:0], pl_wb_rd[4:1], 1'b0};
     wire[19:0]      pl_wb_imm_U         = pl_wb_instr[31:12];
-    wire[20:0]      pl_wb_imm_J         = {pl_wb_imm_U[19], pl_wb_imm_U[7:0], pl_wb_imm_U[8], pl_wb_imm_U[18:9], 1'b0};
+    wire[31:0]      pl_wb_imm_J         = {pl_wb_imm_U[19] ? 11'h7FF : 11'h000, pl_wb_imm_U[19], pl_wb_imm_U[7:0], pl_wb_imm_U[8], pl_wb_imm_U[18:9], 1'b0};
 
     // Pipeline Stage 1 - Instruction Fetch
     always @(posedge cpu_clk, negedge cpu_resetn) begin
@@ -160,19 +160,21 @@ module riscv_cpu_exec_unit#(
         imem_m_ahb_hwdata <= 32'h0000_0000;
         imem_m_ahb_hwstrb <= 4'h0;
         imem_m_ahb_hwrite <= 0;
+        imem_m_ahb_hsize  <= 3'h2; // 32-bit
         if(cpu_resetn) begin
             // `AHB address logic
             imem_m_ahb_haddr    <= (pipe_stall) ? imem_m_ahb_haddr : prog_counter;
             imem_m_ahb_htrans   <= (pipe_stall) ? imem_m_ahb_htrans : `AHB_HTRANS_NONSEQ;
             // Program counter logic
             if(~pipe_stall) begin
-                prog_counter_pl <= prog_counter;
+                prog_counter_pl[1] <= prog_counter_pl[0];
+                prog_counter_pl[0] <= prog_counter;
                 if(branch_jump) begin
                     prog_counter    <= branch_jump_addr;
                 end
-                else if(imem_m_ahb_hrdata[6:0] == `RISCV_RV32I_OPCODE_JAL) begin
-                    prog_counter    <= prog_counter_pl + jump_offset;
-                end
+//                else if(imem_m_ahb_hrdata[6:0] == `RISCV_RV32I_OPCODE_JAL) begin
+//                    prog_counter    <= (jump_offset[20] == 1) ? prog_counter_pl[1] - (~jump_offset+1) : prog_counter_pl[1] + jump_offset;
+//                end
 //                else if(imem_m_ahd_hrdata[6:0] == `RISCV_RV32I_OPCODE_BRANCH) begin
 //TODO - branch prediction
 //               end
@@ -181,14 +183,18 @@ module riscv_cpu_exec_unit#(
                 end
             end else begin
                 prog_counter    <= prog_counter;
-                prog_counter_pl <= prog_counter_pl;
+                prog_counter_pl[1] <= prog_counter_pl[1];
+                prog_counter_pl[0] <= prog_counter_pl[0];
             end
         end else begin
             prog_counter    <= RESET_VECTOR;
+            prog_counter_pl[1] <= RESET_VECTOR;
+            prog_counter_pl[0] <= RESET_VECTOR;
         end
     end
 
     // Pipeline Stage 2 - Instruction Decode
+    logic[1:0]     is_first;
     wire[11:0]     regs_rs1_sel        = {7'h00, pl_fetch_rs1};
     wire[31:0]     regs_rs1_data;
     wire[11:0]     regs_rs2_sel        = (pl_fetch_opcode == `RISCV_RV32I_OPCODE_SYSTEM) ? pl_fetch_imm_I : pl_fetch_rs2;
@@ -197,21 +203,24 @@ module riscv_cpu_exec_unit#(
         if(cpu_resetn) begin
             pl_fetch_instr  <= (pipe_flush) ? `RISCV_RV32I_INSTR_NOP :
                                     (pipe_stall) ? pl_fetch_instr :
-                                    (tb_modesel) ? tb_istream : imem_m_ahb_hrdata;
+                                    (tb_modesel) ? tb_istream :
+                                    (|is_first) ? `RISCV_RV32I_INSTR_NOP : imem_m_ahb_hrdata;
             pl_fetch_pcaddr <= (pipe_flush) ? 32'h0000_0000 :
-                                    (pipe_stall) ? pl_fetch_pcaddr : prog_counter_pl;
+                                    (pipe_stall) ? pl_fetch_pcaddr : prog_counter_pl[1];
+            is_first[1:0]   <= {1'b0, is_first[1]};
         end else begin
             pl_fetch_instr  <= `RISCV_RV32I_INSTR_NOP;
             pl_fetch_pcaddr <= 32'h0000_0000;
+            is_first[1:0]   <= 2'b11;
         end
     end
 
     
     // Pipeline Stage 3 - Instruction Execute
-    wire[31:0]     pl_exec_op1_fwd     = (pl_exec_rs1 == pl_mem_rd) ? pl_mem_res :
-                                            (pl_exec_rs1 == pl_wb_rd) ? pl_wb_res : pl_exec_op1;
-    wire[31:0]     pl_exec_op2_fwd     = (pl_exec_rs1 == pl_mem_rd) ? pl_mem_res :
-                                            (pl_exec_rs1 == pl_wb_rd) ? pl_wb_res : pl_exec_op2;
+    wire[31:0]     pl_exec_op1_fwd     = (pl_exec_rs1 == pl_mem_rd && pl_exec_rs1 != 0) ? pl_mem_res :
+                                            (pl_exec_rs1 == pl_wb_rd && pl_exec_rs1 != 0) ? pl_wb_res : pl_exec_op1;
+    wire[31:0]     pl_exec_op2_fwd     = (pl_exec_rs2 == pl_mem_rd && pl_exec_rs2 != 0) ? pl_mem_res :
+                                            (pl_exec_rs2 == pl_wb_rd && pl_exec_rs2 != 0) ? pl_wb_res : pl_exec_op2;
     wire[31:0]     pl_exec_op3_fwd     = pl_exec_op3;
     wire[31:0]     alu_res;
     wire[31:0]     alu_byp;
@@ -228,9 +237,17 @@ module riscv_cpu_exec_unit#(
                 // op3 = (unused)
                 `RISCV_RV32I_OPCODE_ARITH        : begin
                     pl_exec_op1 <= (pipe_flush) ? 32'h0000_0000 :
-                                        (pipe_stall) ? pl_exec_op1 : regs_rs1_data;
+                                        (pipe_stall) ? pl_exec_op1 :
+                                        (pl_exec_rd == pl_fetch_rs1 && pl_exec_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_exec_opcode != `RISCV_RV32I_OPCODE_STORE) ? alu_res : 
+                                        (pl_mem_rd == pl_fetch_rs1 && pl_mem_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_mem_opcode != `RISCV_RV32I_OPCODE_STORE) ? pl_mem_res :
+                                        (pl_wb_rd == pl_fetch_rs1) ? pl_wb_res : 
+                                        regs_rs1_data;
                     pl_exec_op2 <= (pipe_flush) ? 32'h0000_0000 :
-                                        (pipe_stall) ? pl_exec_op2 : regs_rs2_data;
+                                        (pipe_stall) ? pl_exec_op2 :
+                                        (pl_exec_rd == pl_fetch_rs2 && pl_exec_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_exec_opcode != `RISCV_RV32I_OPCODE_STORE) ? alu_res :
+                                        (pl_mem_rd == pl_fetch_rs2 && pl_mem_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_mem_opcode != `RISCV_RV32I_OPCODE_STORE) ? pl_mem_res :
+                                        (pl_wb_rd == pl_fetch_rs2) ? pl_wb_res :
+                                        regs_rs2_data;
                     pl_exec_op3 <= (pipe_flush) ? 32'h0000_0000 :
                                         (pipe_stall) ? pl_exec_op3 : 32'h0000_0000;
                 end
@@ -240,7 +257,11 @@ module riscv_cpu_exec_unit#(
                 // op3 = (unused)
                 `RISCV_RV32I_OPCODE_ARITH_IMM    : begin
                     pl_exec_op1 <= (pipe_flush) ? 32'h0000_0000 :
-                                        (pipe_stall) ? pl_exec_op1 : regs_rs1_data;
+                                        (pipe_stall) ? pl_exec_op1 :
+                                        (pl_exec_rd == pl_fetch_rs1 && pl_exec_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_exec_opcode != `RISCV_RV32I_OPCODE_STORE) ? alu_res : 
+                                        (pl_mem_rd == pl_fetch_rs1 && pl_mem_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_mem_opcode != `RISCV_RV32I_OPCODE_STORE) ? pl_mem_res :
+                                        (pl_wb_rd == pl_fetch_rs1) ? pl_wb_res : 
+                                        regs_rs1_data;
                     pl_exec_op2 <= (pipe_flush) ? 32'h0000_0000 :
                                         (pipe_stall) ? pl_exec_op2 : pl_fetch_imm_I;
                     pl_exec_op3 <= (pipe_flush) ? 32'h0000_0000 :
@@ -252,7 +273,11 @@ module riscv_cpu_exec_unit#(
                 // op3 = store data (if applicable)
                 `RISCV_RV32I_OPCODE_LOAD         : begin
                     pl_exec_op1 <= (pipe_flush) ? 32'h0000_0000 :
-                                        (pipe_stall) ? pl_exec_op1 : regs_rs1_data;
+                                        (pipe_stall) ? pl_exec_op1 :
+                                        (pl_exec_rd == pl_fetch_rs1 && pl_exec_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_exec_opcode != `RISCV_RV32I_OPCODE_STORE) ? alu_res : 
+                                        (pl_mem_rd == pl_fetch_rs1 && pl_mem_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_mem_opcode != `RISCV_RV32I_OPCODE_STORE) ? pl_mem_res :
+                                        (pl_wb_rd == pl_fetch_rs1) ? pl_wb_res : 
+                                        regs_rs1_data;
                     pl_exec_op2 <= (pipe_flush) ? 32'h0000_0000 :
                                         (pipe_stall) ? pl_exec_op2 : pl_fetch_imm_I;
                     pl_exec_op3 <= (pipe_flush) ? 32'h0000_0000 :
@@ -264,11 +289,19 @@ module riscv_cpu_exec_unit#(
                 // op3 = store data
                 `RISCV_RV32I_OPCODE_STORE        : begin
                     pl_exec_op1 <= (pipe_flush) ? 32'h0000_0000 :
-                                        (pipe_stall) ? pl_exec_op1 : regs_rs1_data;
+                                        (pipe_stall) ? pl_exec_op1 :
+                                        (pl_exec_rd == pl_fetch_rs1 && pl_exec_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_exec_opcode != `RISCV_RV32I_OPCODE_STORE) ? alu_res : 
+                                        (pl_mem_rd == pl_fetch_rs1 && pl_mem_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_mem_opcode != `RISCV_RV32I_OPCODE_STORE) ? pl_mem_res :
+                                        (pl_wb_rd == pl_fetch_rs1) ? pl_wb_res : 
+                                        regs_rs1_data;
                     pl_exec_op2 <= (pipe_flush) ? 32'h0000_0000 :
                                         (pipe_stall) ? pl_exec_op2 : pl_fetch_imm_S;
                     pl_exec_op3 <= (pipe_flush) ? 32'h0000_0000 :
-                                        (pipe_stall) ? pl_exec_op3 : regs_rs2_data;
+                                        (pipe_stall) ? pl_exec_op3 :
+                                        (pl_exec_rd == pl_fetch_rs2 && pl_exec_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_exec_opcode != `RISCV_RV32I_OPCODE_STORE) ? alu_res :
+                                        (pl_mem_rd == pl_fetch_rs2 && pl_mem_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_mem_opcode != `RISCV_RV32I_OPCODE_STORE) ? pl_mem_res :
+                                        (pl_wb_rd == pl_fetch_rs2) ? pl_wb_res :
+                                        regs_rs2_data;
                 end
                 // Branch Instructions
                 // op1 = comparison operand 1
@@ -276,9 +309,17 @@ module riscv_cpu_exec_unit#(
                 // op3 = branch offset
                 `RISCV_RV32I_OPCODE_BRANCH       : begin
                     pl_exec_op1 <= (pipe_flush) ? 32'h0000_0000 :
-                                        (pipe_stall) ? pl_exec_op1 : regs_rs1_data;
+                                        (pipe_stall) ? pl_exec_op1 :
+                                        (pl_exec_rd == pl_fetch_rs1 && pl_exec_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_exec_opcode != `RISCV_RV32I_OPCODE_STORE) ? alu_res : 
+                                        (pl_mem_rd == pl_fetch_rs1 && pl_mem_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_mem_opcode != `RISCV_RV32I_OPCODE_STORE) ? pl_mem_res :
+                                        (pl_wb_rd == pl_fetch_rs1) ? pl_wb_res : 
+                                        regs_rs1_data;
                     pl_exec_op2 <= (pipe_flush) ? 32'h0000_0000 :
-                                        (pipe_stall) ? pl_exec_op2 : regs_rs2_data;
+                                        (pipe_stall) ? pl_exec_op2 :
+                                        (pl_exec_rd == pl_fetch_rs2 && pl_exec_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_exec_opcode != `RISCV_RV32I_OPCODE_STORE) ? alu_res :
+                                        (pl_mem_rd == pl_fetch_rs2 && pl_mem_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_mem_opcode != `RISCV_RV32I_OPCODE_STORE) ? pl_mem_res :
+                                        (pl_wb_rd == pl_fetch_rs2) ? pl_wb_res :
+                                        regs_rs2_data;
                     pl_exec_op3 <= (pipe_flush) ? 32'h0000_0000 :
                                         (pipe_stall) ? pl_exec_op3 : pl_fetch_imm_B;
                 end
@@ -288,7 +329,7 @@ module riscv_cpu_exec_unit#(
                 // op3 = return address
                 `RISCV_RV32I_OPCODE_JAL          : begin
                     pl_exec_op1 <= (pipe_flush) ? 32'h0000_0000 :
-                                        (pipe_stall) ? pl_exec_op1 : 32'h0000_0000;
+                                        (pipe_stall) ? pl_exec_op1 : pl_fetch_pcaddr;
                     pl_exec_op2 <= (pipe_flush) ? 32'h0000_0000 :
                                         (pipe_stall) ? pl_exec_op2 : pl_fetch_imm_J;
                     pl_exec_op3 <= (pipe_flush) ? 32'h0000_0000 :
@@ -300,7 +341,11 @@ module riscv_cpu_exec_unit#(
                 // op3 = return address
                 `RISCV_RV32I_OPCODE_JAL_REG      : begin
                     pl_exec_op1 <= (pipe_flush) ? 32'h0000_0000 :
-                                        (pipe_stall) ? pl_exec_op1 : regs_rs1_data;
+                                        (pipe_stall) ? pl_exec_op1 :
+                                        (pl_exec_rd == pl_fetch_rs1 && pl_exec_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_exec_opcode != `RISCV_RV32I_OPCODE_STORE) ? alu_res : 
+                                        (pl_mem_rd == pl_fetch_rs1 && pl_mem_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_mem_opcode != `RISCV_RV32I_OPCODE_STORE) ? pl_mem_res :
+                                        (pl_wb_rd == pl_fetch_rs1) ? pl_wb_res : 
+                                        regs_rs1_data;
                     pl_exec_op2 <= (pipe_flush) ? 32'h0000_0000 :
                                         (pipe_stall) ? pl_exec_op2 : pl_fetch_imm_I;
                     pl_exec_op3 <= (pipe_flush) ? 32'h0000_0000 :
@@ -324,7 +369,11 @@ module riscv_cpu_exec_unit#(
                 // op3 = (unused)
                 `RISCV_RV32I_OPCODE_AUIPC        : begin
                     pl_exec_op1 <= (pipe_flush) ? 32'h0000_0000 :
-                                        (pipe_stall) ? pl_exec_op1 : regs_rs1_data;
+                                        (pipe_stall) ? pl_exec_op1 :
+                                        (pl_exec_rd == pl_fetch_rs1 && pl_exec_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_exec_opcode != `RISCV_RV32I_OPCODE_STORE) ? alu_res : 
+                                        (pl_mem_rd == pl_fetch_rs1 && pl_mem_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_mem_opcode != `RISCV_RV32I_OPCODE_STORE) ? pl_mem_res :
+                                        (pl_wb_rd == pl_fetch_rs1) ? pl_wb_res : 
+                                        regs_rs1_data;
                     pl_exec_op2 <= (pipe_flush) ? 32'h0000_0000 :
                                         (pipe_stall) ? pl_exec_op2 : pl_fetch_imm_U;
                     pl_exec_op3 <= (pipe_flush) ? 32'h0000_0000 :
@@ -336,9 +385,17 @@ module riscv_cpu_exec_unit#(
                 // op3 = (unused)
                 `RISCV_RV32I_OPCODE_SYSTEM       : begin
                     pl_exec_op1 <= (pipe_flush) ? 32'h0000_0000 :
-                                        (pipe_stall) ? pl_exec_op1 : regs_rs1_data;
+                                        (pipe_stall) ? pl_exec_op1 :
+                                        (pl_exec_rd == pl_fetch_rs1 && pl_exec_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_exec_opcode != `RISCV_RV32I_OPCODE_STORE) ? alu_res : 
+                                        (pl_mem_rd == pl_fetch_rs1 && pl_mem_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_mem_opcode != `RISCV_RV32I_OPCODE_STORE) ? pl_mem_res :
+                                        (pl_wb_rd == pl_fetch_rs1) ? pl_wb_res : 
+                                        regs_rs1_data;
                     pl_exec_op2 <= (pipe_flush) ? 32'h0000_0000 :
-                                        (pipe_stall) ? pl_exec_op2 : regs_rs2_data;
+                                        (pipe_stall) ? pl_exec_op2 :
+                                        (pl_exec_rd == pl_fetch_rs2 && pl_exec_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_exec_opcode != `RISCV_RV32I_OPCODE_STORE) ? alu_res :
+                                        (pl_mem_rd == pl_fetch_rs2 && pl_mem_opcode != `RISCV_RV32I_OPCODE_BRANCH && pl_mem_opcode != `RISCV_RV32I_OPCODE_STORE) ? pl_mem_res :
+                                        (pl_wb_rd == pl_fetch_rs2) ? pl_wb_res :
+                                        regs_rs2_data;
                     pl_exec_op3 <= (pipe_flush) ? 32'h0000_0000 :
                                         (pipe_stall) ? pl_exec_op3 : 32'h0000_0000;
                 end
@@ -474,17 +531,17 @@ module riscv_cpu_exec_unit#(
                     branch_jump         <= (pipe_stall) ? branch_jump : 0;
                     branch_jump_addr    <= (pipe_stall) ? branch_jump_addr : 32'h0000_0000;
                 end
-                `RISCV_RV32I_OPCODE_JAL : begin
-                    dmem_m_ahb_hwdata   <= (pipe_stall) ? dmem_m_ahb_hwdata : 32'h0000_0000;
-                    dmem_m_ahb_hwstrb   <= (pipe_stall) ? dmem_m_ahb_hwstrb : 4'h0;
-                    regs_rd1_data       <= (pipe_stall) ? regs_rd1_data : 32'h0000_0000;
-                    regs_rd1_wren       <= (pipe_stall) ? regs_rd1_wren : 0;
-                    regs_rd2_data       <= (pipe_stall) ? regs_rd2_data : 32'h0000_0000;
-                    regs_rd2_wren       <= (pipe_stall) ? regs_rd2_wren : 0;
-                    pipe_flush          <= (pipe_stall) ? pipe_flush : 0;
-                    branch_jump         <= (pipe_stall) ? branch_jump : 0;
-                    branch_jump_addr    <= (pipe_stall) ? branch_jump_addr : 32'h0000_0000;
-                end
+//                `RISCV_RV32I_OPCODE_JAL : begin
+//                    dmem_m_ahb_hwdata   <= (pipe_stall) ? dmem_m_ahb_hwdata : 32'h0000_0000;
+//                    dmem_m_ahb_hwstrb   <= (pipe_stall) ? dmem_m_ahb_hwstrb : 4'h0;
+//                    regs_rd1_data       <= (pipe_stall) ? regs_rd1_data : 32'h0000_0000;
+//                    regs_rd1_wren       <= (pipe_stall) ? regs_rd1_wren : 0;
+//                    regs_rd2_data       <= (pipe_stall) ? regs_rd2_data : 32'h0000_0000;
+//                    regs_rd2_wren       <= (pipe_stall) ? regs_rd2_wren : 0;
+//                    pipe_flush          <= (pipe_stall) ? pipe_flush : 0;
+//                    branch_jump         <= (pipe_stall) ? branch_jump : 0;
+//                    branch_jump_addr    <= (pipe_stall) ? branch_jump_addr : 32'h0000_0000;
+//                end
                 `RISCV_RV32I_OPCODE_BRANCH : begin
                     dmem_m_ahb_hwdata   <= (pipe_stall) ? dmem_m_ahb_hwdata : 32'h0000_0000;
                     dmem_m_ahb_hwstrb   <= (pipe_stall) ? dmem_m_ahb_hwstrb : 4'h0;
@@ -499,6 +556,7 @@ module riscv_cpu_exec_unit#(
                     branch_jump_addr    <= (pipe_stall) ? branch_jump_addr :
                                                 (pl_mem_res == 1) ? pl_mem_pcaddr + pl_mem_imm_B : 32'h0000_0000;
                 end
+                `RISCV_RV32I_OPCODE_JAL,
                 `RISCV_RV32I_OPCODE_JAL_REG : begin
                     dmem_m_ahb_hwdata   <= (pipe_stall) ? dmem_m_ahb_hwdata : 32'h0000_0000;
                     dmem_m_ahb_hwstrb   <= (pipe_stall) ? dmem_m_ahb_hwstrb : 4'h0;
@@ -538,9 +596,9 @@ module riscv_cpu_exec_unit#(
         .funct3(pl_exec_funct3),
         .funct7(pl_exec_funct7),
         // Operand Inputs
-        .op1(pl_exec_op1_fwd),
-        .op2(pl_exec_op2_fwd),
-        .op3(pl_exec_op3_fwd),
+        .op1(pl_exec_op1),
+        .op2(pl_exec_op2),
+        .op3(pl_exec_op3),
         // Result Outputs
         .res(alu_res),
         .byp(alu_byp)
@@ -743,14 +801,14 @@ module riscv_cpu_regs(
     always @(*) begin
 //TODO - system register pages
         //else rs1_data   <= core_regs[rs1_sel[4:0]];
-        rs1_data        <= core_regs[rs1_sel[4:0]];
+        rs1_data        <= (rs1_sel == rd1_sel) ? rd1_data : core_regs[rs1_sel[4:0]];
     end
 
     // Source Register 2 select
     always @(*) begin
 //TODO - system register pages
         //else rs2_data   <= core_regs[rs2_sel[4:0]];
-        rs2_data        <= core_regs[rs2_sel[4:0]];
+        rs2_data        <= (rs2_sel == rd2_sel) ? rd2_data : core_regs[rs2_sel[4:0]];
     end
 
     always @(posedge cpu_clk, negedge cpu_resetn) begin
@@ -779,39 +837,41 @@ module riscv_cpu_regs(
 endmodule
 
 
-module __tb_riscv_cpu_exec_unit(
-
-);
+module __tb_riscv_cpu_exec_unit();
     logic           cpu_clk;
     logic           cpu_resetn;
 
-    logic[31:0]     imem_m_ahb_haddr;
-    logic[2:0]      imem_m_ahb_hsize;
-    logic[1:0]      imem_m_ahb_htrans;
-    logic[31:0]     imem_m_ahb_hwdata;
-    logic[3:0]      imem_m_ahb_hwstrb;
-    logic           imem_m_ahb_hwrite;
-    logic[31:0]     imem_m_ahb_hrdata;
-    logic           imem_m_ahb_hreadyin;
-    logic           imem_m_ahb_hresp;
+    wire[31:0]     imem_m_ahb_haddr;
+    wire[2:0]      imem_m_ahb_hsize;
+    wire[1:0]      imem_m_ahb_htrans;
+    wire[31:0]     imem_m_ahb_hwdata;
+    wire[3:0]      imem_m_ahb_hwstrb;
+    wire           imem_m_ahb_hwrite;
+    wire[31:0]     imem_m_ahb_hrdata;
+    wire           imem_m_ahb_hreadyin;
+    wire           imem_m_ahb_hresp;
 
-    logic[31:0]     dmem_m_ahb_haddr;
-    logic[2:0]      dmem_m_ahb_hsize;
-    logic[1:0]      dmem_m_ahb_htrans;
-    logic[31:0]     dmem_m_ahb_hwdata;
-    logic[3:0]      dmem_m_ahb_hwstrb;
-    logic           dmem_m_ahb_hwrite;
-    logic[31:0]     dmem_m_ahb_hrdata;
-    logic           dmem_m_ahb_hreadyin;
-    logic           dmem_m_ahb_hresp;
+    wire[31:0]     dmem_m_ahb_haddr;
+    wire[2:0]      dmem_m_ahb_hsize;
+    wire[1:0]      dmem_m_ahb_htrans;
+    wire[31:0]     dmem_m_ahb_hwdata;
+    wire[3:0]      dmem_m_ahb_hwstrb;
+    wire           dmem_m_ahb_hwrite;
+    wire[31:0]     dmem_m_ahb_hrdata;
+    wire           dmem_m_ahb_hreadyin;
+    wire           dmem_m_ahb_hresp;
 
     initial begin
-        #0
+        // Give a falling edge resetn to reset the complex
+        cpu_clk = 0;
+        cpu_resetn = 1;
+        #1
         cpu_clk = 1;
         cpu_resetn = 1;
         #1
         cpu_clk = 0;
         cpu_resetn = 0;
+        // Need a few clock cycles with resetn asserted to allow resets to propagate
         #1
         cpu_clk = 1;
         cpu_resetn = 0;
@@ -839,6 +899,7 @@ module __tb_riscv_cpu_exec_unit(
         #1
         cpu_clk = 1;
         cpu_resetn = 0;
+        // Take out of reset and start running
         #1
         cpu_clk = 0;
         cpu_resetn = 1;
@@ -846,8 +907,13 @@ module __tb_riscv_cpu_exec_unit(
         cpu_clk = 1;
         cpu_resetn = 1;
         forever begin
+            // Toggle the CPU clock and dump a bunch of core information to console
+            // These $display messages trace the majority of the pipeline
             #1
-            cpu_clk = ~cpu_clk;
+            cpu_clk = 0;
+            #1
+            cpu_clk = 1;
+            $display("================================");
             $display("GLOBALS:");
             $display("cpu_resetn = %d, pipe_stall = %d, pipe_flush = %d",
                 cpu_resetn,
@@ -855,16 +921,25 @@ module __tb_riscv_cpu_exec_unit(
                 DUT_inst_riscv_cpu_exec_unit.pipe_flush
             );
             $display("FETCH STAGE:");
-            $display("prog_counter = %h, prog_counter_pl = %h, branch_jump = %d, branch_jump_addr = %h",
+            $display("prog_counter = %h, prog_counter_pl = {%h, %h}, branch_jump = %d, branch_jump_addr = %h",
                 DUT_inst_riscv_cpu_exec_unit.prog_counter,
-                DUT_inst_riscv_cpu_exec_unit.prog_counter_pl,
+                DUT_inst_riscv_cpu_exec_unit.prog_counter_pl[1],
+                DUT_inst_riscv_cpu_exec_unit.prog_counter_pl[0],
                 DUT_inst_riscv_cpu_exec_unit.branch_jump,
                 DUT_inst_riscv_cpu_exec_unit.branch_jump_addr
             );
-            $display("imem_m_ahb_haddr = %h, imem_m_ahb_hrdata = %h, imem_m_ahb_hreadyin = %d",
+            $display("imem_m_ahb_haddr = %h, imem_m_ahb_hrdata = %h, imem_m_ahb_hsize = %h, imem_m_ahb_hreadyin = %d",
                 imem_m_ahb_haddr,
                 imem_m_ahb_hrdata,
+                imem_m_ahb_hsize,
                 imem_m_ahb_hreadyin
+            );
+            $display("inst_imem.ahb_read_aphase = %d, inst_imem.ahbls_htrans = %h, inst_imem.read_collision = %d, sram_addr = %h, sram_rdata = %h",
+                inst_ahb_sync_sram_imem.ahb_read_aphase,
+                inst_ahb_sync_sram_imem.ahbls_htrans,
+                inst_ahb_sync_sram_imem.read_collision,
+                inst_ahb_sync_sram_imem.sram_addr,
+                inst_ahb_sync_sram_imem.sram_rdata
             );
             $display("DECODE STAGE:");
             $display("pl_fetch_instr = %h, pl_fetch_pcaddr = %h",
@@ -882,10 +957,10 @@ module __tb_riscv_cpu_exec_unit(
                 DUT_inst_riscv_cpu_exec_unit.pl_exec_instr,
                 DUT_inst_riscv_cpu_exec_unit.pl_exec_pcaddr
             );
-            $display("pl_exec_op1_fwd = %h, pl_exec_op2_fwd = %h, pl_exec_op3_fwd = %h, alu_res = %h, alu_byp = %h",
-                DUT_inst_riscv_cpu_exec_unit.pl_exec_op1_fwd,
-                DUT_inst_riscv_cpu_exec_unit.pl_exec_op2_fwd,
-                DUT_inst_riscv_cpu_exec_unit.pl_exec_op3_fwd,
+            $display("pl_exec_op1 = %h, pl_exec_op2 = %h, pl_exec_op3 = %h, alu_res = %h, alu_byp = %h",
+                DUT_inst_riscv_cpu_exec_unit.pl_exec_op1,
+                DUT_inst_riscv_cpu_exec_unit.pl_exec_op2,
+                DUT_inst_riscv_cpu_exec_unit.pl_exec_op3,
                 DUT_inst_riscv_cpu_exec_unit.alu_res,
                 DUT_inst_riscv_cpu_exec_unit.alu_byp
             );
@@ -898,9 +973,10 @@ module __tb_riscv_cpu_exec_unit(
                 DUT_inst_riscv_cpu_exec_unit.pl_mem_res,
                 DUT_inst_riscv_cpu_exec_unit.pl_mem_byp
             );
-            $display("dmem_m_ahb_haddr = %h, dmem_m_ahb_hrdata = %h, dmem_m_ahb_hwdata = %h, dmem_m_ahb_hwrite = %d, dmem_m_ahb_hreadyin = %d",
+            $display("dmem_m_ahb_haddr = %h, dmem_m_ahb_hrdata = %h, dmem_m_ahb_hsize = %h, dmem_m_ahb_hwdata = %h, dmem_m_ahb_hwrite = %d, dmem_m_ahb_hreadyin = %d",
                 dmem_m_ahb_haddr,
                 dmem_m_ahb_hrdata,
+                dmem_m_ahb_hsize,
                 dmem_m_ahb_hwdata,
                 dmem_m_ahb_hwrite,
                 dmem_m_ahb_hreadyin
@@ -909,6 +985,10 @@ module __tb_riscv_cpu_exec_unit(
             $display("pl_wb_instr = %h, pl_wb_pcaddr = %h",
                 DUT_inst_riscv_cpu_exec_unit.pl_wb_instr,
                 DUT_inst_riscv_cpu_exec_unit.pl_wb_pcaddr
+            );
+            $display("pl_wb_res = %h, pl_wb_byp = %h",
+                DUT_inst_riscv_cpu_exec_unit.pl_wb_res,
+                DUT_inst_riscv_cpu_exec_unit.pl_wb_byp
             );
             $display("regs_rd1_sel = %h, regs_rd1_data = %h, regs_rd1_wren = %d, regs_rd2_sel = %h, regs_rd2_data = %h, regs_rd2_wren = %d",
                 DUT_inst_riscv_cpu_exec_unit.regs_rd1_sel,
@@ -963,7 +1043,7 @@ module __tb_riscv_cpu_exec_unit(
         .DEPTH(1 << 11),
         .HAS_WRITE_BUFFER(1),
         .USE_1R1W(0),
-        .PRELOAD_FILE("")
+        .PRELOAD_FILE("riscv_fibonacci_1.mem")
     ) inst_ahb_sync_sram_imem (
         // Globals
         .clk(cpu_clk),
@@ -977,9 +1057,9 @@ module __tb_riscv_cpu_exec_unit(
         .ahbls_hwrite(imem_m_ahb_hwrite),
         .ahbls_htrans(imem_m_ahb_htrans),
         .ahbls_hsize(imem_m_ahb_hsize),
-        .ahbls_hburst(),
-        .ahbls_hprot(),
-        .ahbls_hmastlock(),
+        .ahbls_hburst(3'b000),
+        .ahbls_hprot(4'b0011),
+        .ahbls_hmastlock(1'b0),
         .ahbls_hwdata(imem_m_ahb_hwdata),
         .ahbls_hrdata(imem_m_ahb_hrdata)
     );
@@ -997,7 +1077,7 @@ module __tb_riscv_cpu_exec_unit(
         .clk(cpu_clk),
         .rst_n(cpu_resetn),
 
-        // `AHB lite slave interface
+        // AHB lite slave interface
         .ahbls_hready_resp(dmem_m_ahb_hreadyin),
         .ahbls_hready(1'b1),
         .ahbls_hresp(dmem_m_ahb_hresp),
@@ -1005,9 +1085,9 @@ module __tb_riscv_cpu_exec_unit(
         .ahbls_hwrite(dmem_m_ahb_hwrite),
         .ahbls_htrans(dmem_m_ahb_htrans),
         .ahbls_hsize(dmem_m_ahb_hsize),
-        .ahbls_hburst(),
-        .ahbls_hprot(),
-        .ahbls_hmastlock(),
+        .ahbls_hburst(3'b000),
+        .ahbls_hprot(4'b0000),
+        .ahbls_hmastlock(1'b0),
         .ahbls_hwdata(dmem_m_ahb_hwdata),
         .ahbls_hrdata(dmem_m_ahb_hrdata)
     );
