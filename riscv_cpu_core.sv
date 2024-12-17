@@ -862,7 +862,103 @@ module __tb_riscv_cpu_exec_unit();
     wire           dmem_m_ahb_hresp;
 
     initial begin
-        // Give a falling edge resetn to reset the complex
+        $display("$version");
+        $display("ECE401-RISCVCPU Testbench v0.1");
+        $display("$end");
+        $display("$timescale 1ns $end");
+        $display("$scope module __tb_riscv_cpu_exec_unit $end");
+        
+        $display("$var wire %d %s %s $end", 1,  "A", "cpu_resetn");
+        $display("$var wire %d %s %s $end", 1,  "B", "DUT_inst_riscv_cpu_exec_unit.pipe_stall");
+        $display("$var wire %d %s %s $end", 1,  "C", "DUT_inst_riscv_cpu_exec_unit.pipe_flush");
+        $display("$var wire %d %s %s $end", 32, "D", "DUT_inst_riscv_cpu_exec_unit.prog_counter");
+        $display("$var wire %d %s %s $end", 32, "E", "DUT_inst_riscv_cpu_exec_unit.prog_counter_pl[0]");
+        $display("$var wire %d %s %s $end", 32, "F", "DUT_inst_riscv_cpu_exec_unit.prog_counter_pl[1]");
+        $display("$var wire %d %s %s $end", 1,  "G", "DUT_inst_riscv_cpu_exec_unit.branch_jump");
+        $display("$var wire %d %s %s $end", 32, "H", "DUT_inst_riscv_cpu_exec_unit.branch_jump_addr");
+        $display("$var wire %d %s %s $end", 32, "I", "imem_m_ahb_haddr");
+        $display("$var wire %d %s %s $end", 32, "J", "imem_m_ahb_hrdata");
+        $display("$var wire %d %s %s $end", 32, "K", "DUT_inst_riscv_cpu_exec_unit.pl_fetch_instr");
+        $display("$var wire %d %s %s $end", 32, "L", "DUT_inst_riscv_cpu_exec_unit.pl_fetch_pcaddr");
+        $display("$var wire %d %s %s $end", 12, "M", "DUT_inst_riscv_cpu_exec_unit.regs_rs1_sel");
+        $display("$var wire %d %s %s $end", 32, "N", "DUT_inst_riscv_cpu_exec_unit.regs_rs1_data");
+        $display("$var wire %d %s %s $end", 12, "O", "DUT_inst_riscv_cpu_exec_unit.regs_rs2_sel");
+        $display("$var wire %d %s %s $end", 32, "P", "DUT_inst_riscv_cpu_exec_unit.regs_rs2_data");
+        $display("$var wire %d %s %s $end", 32, "Q", "DUT_inst_riscv_cpu_exec_unit.pl_exec_instr");
+        $display("$var wire %d %s %s $end", 32, "R", "DUT_inst_riscv_cpu_exec_unit.pl_exec_pcaddr");
+        $display("$var wire %d %s %s $end", 32, "S", "DUT_inst_riscv_cpu_exec_unit.pl_exec_op1");
+        $display("$var wire %d %s %s $end", 32, "T", "DUT_inst_riscv_cpu_exec_unit.pl_exec_op2");
+        $display("$var wire %d %s %s $end", 32, "U", "DUT_inst_riscv_cpu_exec_unit.pl_exec_op3");
+        $display("$var wire %d %s %s $end", 32, "V", "DUT_inst_riscv_cpu_exec_unit.alu_res");
+        $display("$var wire %d %s %s $end", 32, "W", "DUT_inst_riscv_cpu_exec_unit.alu_byp");
+        $display("$var wire %d %s %s $end", 32, "X", "DUT_inst_riscv_cpu_exec_unit.pl_mem_instr");
+        $display("$var wire %d %s %s $end", 32, "Y", "DUT_inst_riscv_cpu_exec_unit.pl_mem_pcaddr");
+        $display("$var wire %d %s %s $end", 32, "Z", "DUT_inst_riscv_cpu_exec_unit.pl_mem_res");
+        $display("$var wire %d %s %s $end", 32, "a", "DUT_inst_riscv_cpu_exec_unit.pl_mem_byp");
+        $display("$var wire %d %s %s $end", 32, "b", "dmem_m_ahb_haddr");
+        $display("$var wire %d %s %s $end", 32, "c", "dmem_m_ahb_hrdata");
+        $display("$var wire %d %s %s $end", 2,  "d", "dmem_m_ahb_hsize");
+        $display("$var wire %d %s %s $end", 32, "e", "dmem_m_ahb_hwdata");
+        $display("$var wire %d %s %s $end", 1,  "f", "dmem_m_ahb_hwrite");
+        $display("$var wire %d %s %s $end", 1,  "g", "dmem_m_ahb_hreadyin");
+        $display("$var wire %d %s %s $end", 32, "h", "DUT_inst_riscv_cpu_exec_unit.pl_wb_instr");
+        $display("$var wire %d %s %s $end", 32, "i", "DUT_inst_riscv_cpu_exec_unit.pl_wb_pcaddr");
+        $display("$var wire %d %s %s $end", 32, "j", "DUT_inst_riscv_cpu_exec_unit.pl_wb_res");
+        $display("$var wire %d %s %s $end", 32, "k", "DUT_inst_riscv_cpu_exec_unit.pl_wb_byp");
+        $display("$var wire %d %s %s $end", 12, "l", "DUT_inst_riscv_cpu_exec_unit.regs_rd1_sel");
+        $display("$var wire %d %s %s $end", 32, "m", "DUT_inst_riscv_cpu_exec_unit.regs_rd1_data");
+        $display("$var wire %d %s %s $end", 1,  "n", "DUT_inst_riscv_cpu_exec_unit.regs_rd1_wren");
+        $display("$var wire %d %s %s $end", 5,  "o", "DUT_inst_riscv_cpu_exec_unit.regs_rd2_sel");
+        $display("$var wire %d %s %s $end", 32, "p", "DUT_inst_riscv_cpu_exec_unit.regs_rd2_data");
+        $display("$var wire %d %s %s $end", 1,  "q", "DUT_inst_riscv_cpu_exec_unit.regs_rd2_wren");
+
+        $display("$upscope $end");
+        $display("$enddefinitions $end");
+        $display("$dumpvars");
+        $display("%bA", cpu_resetn);
+        $display("%bB", DUT_inst_riscv_cpu_exec_unit.pipe_stall);
+        $display("%bC", DUT_inst_riscv_cpu_exec_unit.pipe_flush);
+        $display("b%b D", DUT_inst_riscv_cpu_exec_unit.prog_counter);
+        $display("b%b E", DUT_inst_riscv_cpu_exec_unit.prog_counter_pl[0]);
+        $display("b%b F", DUT_inst_riscv_cpu_exec_unit.prog_counter_pl[1]);
+        $display("%bG", DUT_inst_riscv_cpu_exec_unit.branch_jump);
+        $display("b%b H", DUT_inst_riscv_cpu_exec_unit.branch_jump_addr);
+        $display("b%b I", imem_m_ahb_haddr);
+        $display("b%b J", imem_m_ahb_hrdata);
+        $display("b%b K", DUT_inst_riscv_cpu_exec_unit.pl_fetch_instr);
+        $display("b%b L", DUT_inst_riscv_cpu_exec_unit.pl_fetch_pcaddr);
+        $display("b%b M", DUT_inst_riscv_cpu_exec_unit.regs_rs1_sel);
+        $display("b%b N", DUT_inst_riscv_cpu_exec_unit.regs_rs1_data);
+        $display("b%b O", DUT_inst_riscv_cpu_exec_unit.regs_rs2_sel);
+        $display("b%b P", DUT_inst_riscv_cpu_exec_unit.regs_rs2_data);
+        $display("b%b Q", DUT_inst_riscv_cpu_exec_unit.pl_exec_instr);
+        $display("b%b R", DUT_inst_riscv_cpu_exec_unit.pl_exec_pcaddr);
+        $display("b%b S", DUT_inst_riscv_cpu_exec_unit.pl_exec_op1);
+        $display("b%b T", DUT_inst_riscv_cpu_exec_unit.pl_exec_op2);
+        $display("b%b U", DUT_inst_riscv_cpu_exec_unit.pl_exec_op3);
+        $display("b%b V", DUT_inst_riscv_cpu_exec_unit.alu_res);
+        $display("b%b W", DUT_inst_riscv_cpu_exec_unit.alu_byp);
+        $display("b%b X", DUT_inst_riscv_cpu_exec_unit.pl_mem_instr);
+        $display("b%b Y", DUT_inst_riscv_cpu_exec_unit.pl_mem_pcaddr);
+        $display("b%b Z", DUT_inst_riscv_cpu_exec_unit.pl_mem_res);
+        $display("b%b a", DUT_inst_riscv_cpu_exec_unit.pl_mem_byp);
+        $display("b%b b", dmem_m_ahb_haddr);
+        $display("b%b c", dmem_m_ahb_hrdata);
+        $display("b%b d", dmem_m_ahb_hsize);
+        $display("b%b e", dmem_m_ahb_hwdata);
+        $display("%bf", dmem_m_ahb_hwrite);
+        $display("%bg", dmem_m_ahb_hreadyin);
+        $display("b%b h", DUT_inst_riscv_cpu_exec_unit.pl_wb_instr);
+        $display("b%b i", DUT_inst_riscv_cpu_exec_unit.pl_wb_pcaddr);
+        $display("b%b j", DUT_inst_riscv_cpu_exec_unit.pl_wb_res);
+        $display("b%b k", DUT_inst_riscv_cpu_exec_unit.pl_wb_byp);
+        $display("b%b l", DUT_inst_riscv_cpu_exec_unit.regs_rd1_sel);
+        $display("b%b m", DUT_inst_riscv_cpu_exec_unit.regs_rd1_data);
+        $display("%bn", DUT_inst_riscv_cpu_exec_unit.regs_rd1_wren);
+        $display("b%b o", DUT_inst_riscv_cpu_exec_unit.regs_rd2_sel);
+        $display("b%b p", DUT_inst_riscv_cpu_exec_unit.regs_rd2_data);
+        $display("%bq", DUT_inst_riscv_cpu_exec_unit.regs_rd2_wren);
+        $display("$end");
         cpu_clk = 0;
         cpu_resetn = 1;
         #1
@@ -871,7 +967,6 @@ module __tb_riscv_cpu_exec_unit();
         #1
         cpu_clk = 0;
         cpu_resetn = 0;
-        // Need a few clock cycles with resetn asserted to allow resets to propagate
         #1
         cpu_clk = 1;
         cpu_resetn = 0;
@@ -893,111 +988,63 @@ module __tb_riscv_cpu_exec_unit();
         #1
         cpu_clk = 1;
         cpu_resetn = 0;
-        #1
-        cpu_clk = 0;
-        cpu_resetn = 0;
-        #1
-        cpu_clk = 1;
-        cpu_resetn = 0;
-        // Take out of reset and start running
         #1
         cpu_clk = 0;
         cpu_resetn = 1;
         #1
         cpu_clk = 1;
         cpu_resetn = 1;
-        forever begin
+        for(integer i = 0; i < 4096; i++) begin
             // Toggle the CPU clock and dump a bunch of core information to console
             // These $display messages trace the majority of the pipeline
             #1
             cpu_clk = 0;
             #1
             cpu_clk = 1;
-            $display("================================");
-            $display("GLOBALS:");
-            $display("cpu_resetn = %d, pipe_stall = %d, pipe_flush = %d",
-                cpu_resetn,
-                DUT_inst_riscv_cpu_exec_unit.pipe_stall,
-                DUT_inst_riscv_cpu_exec_unit.pipe_flush
-            );
-            $display("FETCH STAGE:");
-            $display("prog_counter = %h, prog_counter_pl = {%h, %h}, branch_jump = %d, branch_jump_addr = %h",
-                DUT_inst_riscv_cpu_exec_unit.prog_counter,
-                DUT_inst_riscv_cpu_exec_unit.prog_counter_pl[1],
-                DUT_inst_riscv_cpu_exec_unit.prog_counter_pl[0],
-                DUT_inst_riscv_cpu_exec_unit.branch_jump,
-                DUT_inst_riscv_cpu_exec_unit.branch_jump_addr
-            );
-            $display("imem_m_ahb_haddr = %h, imem_m_ahb_hrdata = %h, imem_m_ahb_hsize = %h, imem_m_ahb_hreadyin = %d",
-                imem_m_ahb_haddr,
-                imem_m_ahb_hrdata,
-                imem_m_ahb_hsize,
-                imem_m_ahb_hreadyin
-            );
-            $display("inst_imem.ahb_read_aphase = %d, inst_imem.ahbls_htrans = %h, inst_imem.read_collision = %d, sram_addr = %h, sram_rdata = %h",
-                inst_ahb_sync_sram_imem.ahb_read_aphase,
-                inst_ahb_sync_sram_imem.ahbls_htrans,
-                inst_ahb_sync_sram_imem.read_collision,
-                inst_ahb_sync_sram_imem.sram_addr,
-                inst_ahb_sync_sram_imem.sram_rdata
-            );
-            $display("DECODE STAGE:");
-            $display("pl_fetch_instr = %h, pl_fetch_pcaddr = %h",
-                DUT_inst_riscv_cpu_exec_unit.pl_fetch_instr,
-                DUT_inst_riscv_cpu_exec_unit.pl_fetch_pcaddr
-            );
-            $display("regs_rs1_sel = %h, regs_rs1_data = %h, regs_rs2_sel = %h, regs_rs2_data = %h",
-                DUT_inst_riscv_cpu_exec_unit.regs_rs1_sel,
-                DUT_inst_riscv_cpu_exec_unit.regs_rs1_data,
-                DUT_inst_riscv_cpu_exec_unit.regs_rs2_sel,
-                DUT_inst_riscv_cpu_exec_unit.regs_rs2_data
-            );
-            $display("EXECUTE STAGE:");
-            $display("pl_exec_instr = %h, pl_exec_pcaddr = %h",
-                DUT_inst_riscv_cpu_exec_unit.pl_exec_instr,
-                DUT_inst_riscv_cpu_exec_unit.pl_exec_pcaddr
-            );
-            $display("pl_exec_op1 = %h, pl_exec_op2 = %h, pl_exec_op3 = %h, alu_res = %h, alu_byp = %h",
-                DUT_inst_riscv_cpu_exec_unit.pl_exec_op1,
-                DUT_inst_riscv_cpu_exec_unit.pl_exec_op2,
-                DUT_inst_riscv_cpu_exec_unit.pl_exec_op3,
-                DUT_inst_riscv_cpu_exec_unit.alu_res,
-                DUT_inst_riscv_cpu_exec_unit.alu_byp
-            );
-            $display("MEMORY STAGE:");
-            $display("pl_mem_instr = %h, pl_mem_pcaddr = %h",
-                DUT_inst_riscv_cpu_exec_unit.pl_mem_instr,
-                DUT_inst_riscv_cpu_exec_unit.pl_mem_pcaddr
-            );
-            $display("pl_mem_res = %h, pl_mem_byp = %h",
-                DUT_inst_riscv_cpu_exec_unit.pl_mem_res,
-                DUT_inst_riscv_cpu_exec_unit.pl_mem_byp
-            );
-            $display("dmem_m_ahb_haddr = %h, dmem_m_ahb_hrdata = %h, dmem_m_ahb_hsize = %h, dmem_m_ahb_hwdata = %h, dmem_m_ahb_hwrite = %d, dmem_m_ahb_hreadyin = %d",
-                dmem_m_ahb_haddr,
-                dmem_m_ahb_hrdata,
-                dmem_m_ahb_hsize,
-                dmem_m_ahb_hwdata,
-                dmem_m_ahb_hwrite,
-                dmem_m_ahb_hreadyin
-            );
-            $display("WRITEBACK STAGE:");
-            $display("pl_wb_instr = %h, pl_wb_pcaddr = %h",
-                DUT_inst_riscv_cpu_exec_unit.pl_wb_instr,
-                DUT_inst_riscv_cpu_exec_unit.pl_wb_pcaddr
-            );
-            $display("pl_wb_res = %h, pl_wb_byp = %h",
-                DUT_inst_riscv_cpu_exec_unit.pl_wb_res,
-                DUT_inst_riscv_cpu_exec_unit.pl_wb_byp
-            );
-            $display("regs_rd1_sel = %h, regs_rd1_data = %h, regs_rd1_wren = %d, regs_rd2_sel = %h, regs_rd2_data = %h, regs_rd2_wren = %d",
-                DUT_inst_riscv_cpu_exec_unit.regs_rd1_sel,
-                DUT_inst_riscv_cpu_exec_unit.regs_rd1_data,
-                DUT_inst_riscv_cpu_exec_unit.regs_rd1_wren,
-                DUT_inst_riscv_cpu_exec_unit.regs_rd2_sel,
-                DUT_inst_riscv_cpu_exec_unit.regs_rd2_data,
-                DUT_inst_riscv_cpu_exec_unit.regs_rd2_wren
-            );
+            $display("#%0d", i);
+            $display("%bA", cpu_resetn);
+            $display("%bB", DUT_inst_riscv_cpu_exec_unit.pipe_stall);
+            $display("%bC", DUT_inst_riscv_cpu_exec_unit.pipe_flush);
+            $display("b%b D", DUT_inst_riscv_cpu_exec_unit.prog_counter);
+            $display("b%b E", DUT_inst_riscv_cpu_exec_unit.prog_counter_pl[0]);
+            $display("b%b F", DUT_inst_riscv_cpu_exec_unit.prog_counter_pl[1]);
+            $display("%bG", DUT_inst_riscv_cpu_exec_unit.branch_jump);
+            $display("b%b H", DUT_inst_riscv_cpu_exec_unit.branch_jump_addr);
+            $display("b%b I", imem_m_ahb_haddr);
+            $display("b%b J", imem_m_ahb_hrdata);
+            $display("b%b K", DUT_inst_riscv_cpu_exec_unit.pl_fetch_instr);
+            $display("b%b L", DUT_inst_riscv_cpu_exec_unit.pl_fetch_pcaddr);
+            $display("b%b M", DUT_inst_riscv_cpu_exec_unit.regs_rs1_sel);
+            $display("b%b N", DUT_inst_riscv_cpu_exec_unit.regs_rs1_data);
+            $display("b%b O", DUT_inst_riscv_cpu_exec_unit.regs_rs2_sel);
+            $display("b%b P", DUT_inst_riscv_cpu_exec_unit.regs_rs2_data);
+            $display("b%b Q", DUT_inst_riscv_cpu_exec_unit.pl_exec_instr);
+            $display("b%b R", DUT_inst_riscv_cpu_exec_unit.pl_exec_pcaddr);
+            $display("b%b S", DUT_inst_riscv_cpu_exec_unit.pl_exec_op1);
+            $display("b%b T", DUT_inst_riscv_cpu_exec_unit.pl_exec_op2);
+            $display("b%b U", DUT_inst_riscv_cpu_exec_unit.pl_exec_op3);
+            $display("b%b V", DUT_inst_riscv_cpu_exec_unit.alu_res);
+            $display("b%b W", DUT_inst_riscv_cpu_exec_unit.alu_byp);
+            $display("b%b X", DUT_inst_riscv_cpu_exec_unit.pl_mem_instr);
+            $display("b%b Y", DUT_inst_riscv_cpu_exec_unit.pl_mem_pcaddr);
+            $display("b%b Z", DUT_inst_riscv_cpu_exec_unit.pl_mem_res);
+            $display("b%b a", DUT_inst_riscv_cpu_exec_unit.pl_mem_byp);
+            $display("b%b b", dmem_m_ahb_haddr);
+            $display("b%b c", dmem_m_ahb_hrdata);
+            $display("b%b d", dmem_m_ahb_hsize);
+            $display("b%b e", dmem_m_ahb_hwdata);
+            $display("%bf", dmem_m_ahb_hwrite);
+            $display("%bg", dmem_m_ahb_hreadyin);
+            $display("b%b h", DUT_inst_riscv_cpu_exec_unit.pl_wb_instr);
+            $display("b%b i", DUT_inst_riscv_cpu_exec_unit.pl_wb_pcaddr);
+            $display("b%b j", DUT_inst_riscv_cpu_exec_unit.pl_wb_res);
+            $display("b%b k", DUT_inst_riscv_cpu_exec_unit.pl_wb_byp);
+            $display("b%b l", DUT_inst_riscv_cpu_exec_unit.regs_rd1_sel);
+            $display("b%b m", DUT_inst_riscv_cpu_exec_unit.regs_rd1_data);
+            $display("%bn", DUT_inst_riscv_cpu_exec_unit.regs_rd1_wren);
+            $display("b%b o", DUT_inst_riscv_cpu_exec_unit.regs_rd2_sel);
+            $display("b%b p", DUT_inst_riscv_cpu_exec_unit.regs_rd2_data);
+            $display("%bq", DUT_inst_riscv_cpu_exec_unit.regs_rd2_wren);
         end
     end
 

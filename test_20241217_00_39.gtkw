@@ -1,0 +1,70 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Tue Dec 17 05:40:01 2024
+[*]
+[dumpfile] "/home/sriley/Code-Projects/Lehigh_MSCE/ece401/ECE401-RISCVCPU/output.vcd"
+[dumpfile_mtime] "Tue Dec 17 05:32:24 2024"
+[dumpfile_size] 4811752
+[savefile] "/home/sriley/Code-Projects/Lehigh_MSCE/ece401/ECE401-RISCVCPU/test_20241217_00_39.gtkw"
+[timestart] 0
+[size] 2610 1104
+[pos] 2244 -698
+*-1.744499 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 455
+[signals_width] 446
+[sst_expanded] 1
+[sst_vpaned_height] 329
+@28
+__tb_riscv_cpu_exec_unit.cpu_resetn
+@22
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.prog_counter[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.prog_counter_pl[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.prog_counter_pl[1:1]
+__tb_riscv_cpu_exec_unit.imem_m_ahb_haddr[31:0]
+__tb_riscv_cpu_exec_unit.imem_m_ahb_hrdata[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pl_fetch_instr[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pl_fetch_pcaddr[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.regs_rs1_sel[11:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.regs_rs1_data[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.regs_rs2_sel[11:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.regs_rs2_data[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pl_exec_instr[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pl_exec_pcaddr[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pl_exec_op1[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pl_exec_op2[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pl_exec_op3[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.alu_res[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.alu_byp[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pl_mem_instr[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pl_mem_pcaddr[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pl_mem_res[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pl_mem_byp[31:0]
+__tb_riscv_cpu_exec_unit.dmem_m_ahb_haddr[31:0]
+__tb_riscv_cpu_exec_unit.dmem_m_ahb_hrdata[31:0]
+__tb_riscv_cpu_exec_unit.dmem_m_ahb_hwdata[31:0]
+@28
+__tb_riscv_cpu_exec_unit.dmem_m_ahb_hwrite
+__tb_riscv_cpu_exec_unit.dmem_m_ahb_hsize[1:0]
+__tb_riscv_cpu_exec_unit.dmem_m_ahb_hreadyin
+__tb_riscv_cpu_exec_unit.dmem_m_ahb_hwrite
+@22
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pl_wb_instr[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pl_wb_pcaddr[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pl_wb_res[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pl_wb_byp[31:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.regs_rd1_sel[11:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.regs_rd1_data[31:0]
+@28
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.regs_rd1_wren
+@22
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.regs_rd2_sel[4:0]
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.regs_rd2_data[31:0]
+@28
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.regs_rd2_wren
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pipe_stall
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.pipe_flush
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.branch_jump
+@23
+__tb_riscv_cpu_exec_unit.\DUT_inst_riscv_cpu_exec_unit.branch_jump_addr[31:0]
+[pattern_trace] 1
+[pattern_trace] 0
