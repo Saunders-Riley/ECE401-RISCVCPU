@@ -41,39 +41,39 @@
 //     .tb_modesel(),
 // );
 
-
+/// RISC-V RV32I CPU Core Integration
 module riscv_cpu_exec_unit#(
     parameter   RESET_VECTOR    = 32'h0000_0000
 )(
     // Core Signals
-    input   logic       cpu_clk,
-    input   logic       cpu_resetn,
+    input   logic       cpu_clk,                ///< clock input
+    input   logic       cpu_resetn,             ///< active-low reset
     // `AHB Instruction Interface
     // `AHB HCLK and HRESETN should be connected to CPU_CLK and CPU_RESETN,
     // respectively
-    output  logic[31:0] imem_m_ahb_haddr,
-    output  logic[2:0]  imem_m_ahb_hsize,
-    output  logic[1:0]  imem_m_ahb_htrans,
-    output  logic[31:0] imem_m_ahb_hwdata,
-    output  logic[3:0]  imem_m_ahb_hwstrb,
-    output  logic       imem_m_ahb_hwrite,
-    input   logic[31:0] imem_m_ahb_hrdata,
-    input   logic       imem_m_ahb_hreadyin,
-    input   logic       imem_m_ahb_hresp,
+    output  logic[31:0] imem_m_ahb_haddr,       ///< instruction memory address
+    output  logic[2:0]  imem_m_ahb_hsize,       ///< instruction memory transfer size
+    output  logic[1:0]  imem_m_ahb_htrans,      ///< instruction memory transfer type
+    output  logic[31:0] imem_m_ahb_hwdata,      ///< instruction memory write data
+    output  logic[3:0]  imem_m_ahb_hwstrb,      ///< instruction memory write strobes
+    output  logic       imem_m_ahb_hwrite,      ///< instruction memory write
+    input   logic[31:0] imem_m_ahb_hrdata,      ///< instruction memory read data
+    input   logic       imem_m_ahb_hreadyin,    ///< instruction memory ready
+    input   logic       imem_m_ahb_hresp,       ///< instruction memory response
     // `AHB Data Interface
     // `AHB HCLK and HRESETN should be connected to CPU_CLK and CPU_RESETN,
     // respectively
-    output  logic[31:0] dmem_m_ahb_haddr,
-    output  logic[2:0]  dmem_m_ahb_hsize,
-    output  logic[1:0]  dmem_m_ahb_htrans,
-    output  logic[31:0] dmem_m_ahb_hwdata,
-    output  logic[3:0]  dmem_m_ahb_hwstrb,
-    output  logic       dmem_m_ahb_hwrite,
-    input   logic[31:0] dmem_m_ahb_hrdata,
-    input   logic       dmem_m_ahb_hreadyin,
-    input   logic       dmem_m_ahb_hresp,
+    output  logic[31:0] dmem_m_ahb_haddr,       ///< data memory address
+    output  logic[2:0]  dmem_m_ahb_hsize,       ///< data memory transfer size
+    output  logic[1:0]  dmem_m_ahb_htrans,      ///< data memory transfer type
+    output  logic[31:0] dmem_m_ahb_hwdata,      ///< data memory write data
+    output  logic[3:0]  dmem_m_ahb_hwstrb,      ///< data memory write strobe
+    output  logic       dmem_m_ahb_hwrite,      ///< data memory write
+    input   logic[31:0] dmem_m_ahb_hrdata,      ///< data memory read data
+    input   logic       dmem_m_ahb_hreadyin,    ///< data memory ready
+    input   logic       dmem_m_ahb_hresp,       ///< data memory response
 
-    // Testbench instruction stream input
+    // Testbench instruction stream input - unused
     input   logic[31:0] tb_istream,
     input   logic       tb_modesel
 );
@@ -862,12 +862,14 @@ module __tb_riscv_cpu_exec_unit();
     wire           dmem_m_ahb_hresp;
 
     initial begin
+        // This testbench format is set up to provide a .vcd file that can be opened with GTKWave
+        // for easier viewing and debugging of the processor state.
         $display("$version");
         $display("ECE401-RISCVCPU Testbench v0.1");
         $display("$end");
         $display("$timescale 1ns $end");
         $display("$scope module __tb_riscv_cpu_exec_unit $end");
-        
+        // Configuring signals list
         $display("$var wire %d %s %s $end", 1,  "A", "cpu_resetn");
         $display("$var wire %d %s %s $end", 1,  "B", "DUT_inst_riscv_cpu_exec_unit.pipe_stall");
         $display("$var wire %d %s %s $end", 1,  "C", "DUT_inst_riscv_cpu_exec_unit.pipe_flush");
@@ -911,7 +913,7 @@ module __tb_riscv_cpu_exec_unit();
         $display("$var wire %d %s %s $end", 5,  "o", "DUT_inst_riscv_cpu_exec_unit.regs_rd2_sel");
         $display("$var wire %d %s %s $end", 32, "p", "DUT_inst_riscv_cpu_exec_unit.regs_rd2_data");
         $display("$var wire %d %s %s $end", 1,  "q", "DUT_inst_riscv_cpu_exec_unit.regs_rd2_wren");
-
+        // Dump the initial state
         $display("$upscope $end");
         $display("$enddefinitions $end");
         $display("$dumpvars");
@@ -959,6 +961,7 @@ module __tb_riscv_cpu_exec_unit();
         $display("b%b p", DUT_inst_riscv_cpu_exec_unit.regs_rd2_data);
         $display("%bq", DUT_inst_riscv_cpu_exec_unit.regs_rd2_wren);
         $display("$end");
+        // Give a few clock cycles with resetn asserted to allow reset to propagate
         cpu_clk = 0;
         cpu_resetn = 1;
         #1
@@ -1138,6 +1141,5 @@ module __tb_riscv_cpu_exec_unit();
         .ahbls_hwdata(dmem_m_ahb_hwdata),
         .ahbls_hrdata(dmem_m_ahb_hrdata)
     );
-
 
 endmodule

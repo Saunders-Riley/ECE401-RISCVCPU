@@ -1,6 +1,3 @@
 [submodule "libfpga"]
 	path = libfpga
 	url = git@github.com:Wren6991/libfpga.git
-[submodule "RISC-V-Pipelined-VHDL"]
-	path = RISC-V-Pipelined-VHDL
-	url = git@github.com:aaronelsonp/RISC-V-Pipelined-VHDL.git

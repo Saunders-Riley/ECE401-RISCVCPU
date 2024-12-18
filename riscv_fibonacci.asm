@@ -14,6 +14,7 @@ __loop:
     sw x2, 4(x3) # 0x0021A223 : mem[x3 + 4] = x2
     addi x3, x3, 8; # 0x00818193 : x3 = x3 + 8
     beq x3, x4, __exit; # 0x00418463: if x3 == x4 then __exit
+    addi x0, x0, 0;  #0x00000013 : x0 = x0 + 0 ; NOP (control hazard - NEEDS FIXED!)
     jal __loop  # 0xFE9FF0EF : jump to __loop and save position to ra
 __exit:
     addi x0, x0, 0; #0x00000013 : x0 = x0 + 0 ; NOP (control hazard - NEEDS FIXED!)
